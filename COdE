@@ -1,0 +1,148 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Abonent {
+
+public:
+
+    Abonent(const std::string& name, const std::string& homePhone, const std::string& workPhone, const std::string& mobilePhone, const std::string& additionalInfo) :
+        m_name(new std::string(name)),
+        m_homePhone(homePhone),
+        m_workPhone(workPhone),
+        m_mobilePhone(mobilePhone),
+        m_additionalInfo(additionalInfo)
+    {}
+
+    Abonent(const Abonent& other) :
+        m_name(new std::string(*other.m_name)),
+        m_homePhone(other.m_homePhone),
+        m_workPhone(other.m_workPhone),
+        m_mobilePhone(other.m_mobilePhone),
+        m_additionalInfo(other.m_additionalInfo)
+    {}
+
+    Abonent& operator=(const Abonent& other) {
+        if (this != &other) {
+            delete m_name;
+            m_name = new std::string(*other.m_name);
+            m_homePhone = other.m_homePhone;
+            m_workPhone = other.m_workPhone;
+            m_mobilePhone = other.m_mobilePhone;
+            m_additionalInfo = other.m_additionalInfo;
+        }
+        return *this;
+    }
+
+    ~Abonent() {
+        delete m_name;
+    }
+
+    const std::string& getName() const {
+        return *m_name;
+    }
+
+    const std::string& getHomePhone() const {
+        return m_homePhone;
+    }
+
+    const std::string& getWorkPhone() const {
+        return m_workPhone;
+    }
+
+    const std::string& getMobilePhone() const {
+        return m_mobilePhone;
+    }
+
+    const std::string& getAdditionalInfo() const {
+        return m_additionalInfo;
+    }
+
+private:
+
+    std::string* m_name;
+    std::string m_homePhone;
+    std::string m_workPhone;
+    std::string m_mobilePhone;
+    std::string m_additionalInfo;
+
+};
+
+class PhoneBook {
+
+public:
+
+    PhoneBook() {}
+
+    PhoneBook(const PhoneBook& other) :
+        m_abonents(other.m_abonents)
+    {}
+
+    PhoneBook& operator=(const PhoneBook& other) {
+        if (this != &other) {
+            m_abonents = other.m_abonents;
+        }
+        return *this;
+    }
+
+    ~PhoneBook() {}
+
+    void addAbonent(const std::string& name, const std::string& homePhone, const std::string& workPhone, const std::string& mobilePhone, const std::string& additionalInfo) {
+        Abonent abonent(name, homePhone, workPhone, mobilePhone, additionalInfo);
+        m_abonents.push_back(abonent);
+    }
+
+    void removeAbonent(const std::string& name) {
+        for (auto it = m_abonents.begin(); it != m_abonents.end(); ++it) {
+            if (it->getName() == name) {
+                m_abonents.erase(it);
+                return;
+            }
+        }
+    }
+
+    Abonent* findAbonent(const std::string& name) {
+        for (auto& abonent : m_abonents) {
+            if (abonent.getName() == name) {
+                return &abonent;
+            }
+        }
+        return nullptr;
+    }
+
+    void showAllAbonents() const {
+        for (const auto& abonent : m_abonents) {
+            std::cout << "Name: " << abonent.getName() << std::endl;
+            std::cout << "Home Phone: " << abonent.getHomePhone() << std::endl;
+            std::cout << "Work Phone: " << abonent.getWorkPhone() << std::endl;
+            std::cout << "Mobile Phone: " << abonent.getMobilePhone() << std::endl;
+            std::cout << "Additional Info: " << abonent.getAdditionalInfo() << std::endl << std::endl;
+        }
+    }
+
+private:
+    std::vector<Abonent> m_abonents;
+};
+
+int main() {
+    PhoneBook phoneBook;
+    phoneBook.addAbonent("Ruth Schmidt", "+11-111-111-1111", "+22-222-222-2222", "+22-222-222-2222", "additional info");
+    phoneBook.addAbonent("Edmund Allen", "+33-333-333-3333", "+44-444-444-4444", "+55-555-555-5555", "more additional info");
+    phoneBook.showAllAbonents();
+    phoneBook.removeAbonent("Ruth Schmidt");
+    Abonent* abonent = phoneBook.findAbonent("Edmund Allen");
+
+    if (abonent != nullptr) {
+        std::cout << "Found abonent:" << std::endl;
+        std::cout << "Name: " << abonent->getName() << std::endl;
+        std::cout << "Home Phone: " << abonent->getHomePhone() << std::endl;
+        std::cout << "Work Phone: " << abonent->getWorkPhone() << std::endl;
+        std::cout << "Mobile Phone: " << abonent->getMobilePhone() << std::endl;
+        std::cout << "Additional Info: " << abonent->getAdditionalInfo() << std::endl << std::endl;
+    }
+    else {
+        std::cout << "Abonent not found." << std::endl;
+    }
+
+    return 0;
+}
